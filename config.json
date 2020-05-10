@@ -1,0 +1,5 @@
+{
+    "fields": ["Notes-Kanjified-vocab"],
+    "url": "http://127.0.0.1:8001/kanimaji/converted/js_svg",
+    "svg_suffix": "_js_anim.svg"
+}

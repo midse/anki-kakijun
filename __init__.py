@@ -1,32 +1,35 @@
 from anki import hooks
 from anki.template import TemplateRenderContext
-from aqt import dialogs, gui_hooks, mw
-from aqt.browser import PreviewDialog
-from aqt.clayout import CardLayout
-from aqt.qt import Qt
-from aqt.reviewer import Reviewer
+from aqt import mw
 
-# Responding to clicks
-############################
-from aqt.utils import tooltip
+config = mw.addonManager.getConfig(__name__)
+
 
 def is_kanji(v):
     v = ord(v)
-    return (v >= 0x4E00 and v <= 0x9FC3) or (v >= 0x3400 and v <= 0x4DBF) or (v >= 0xF900 and v <= 0xFAD9) or (v >= 0x2E80 and v <= 0x2EFF) or (v >= 0x20000 and v <= 0x2A6DF)
+    return (
+        (v >= 0x4E00 and v <= 0x9FC3)
+        or (v >= 0x3400 and v <= 0x4DBF)
+        or (v >= 0xF900 and v <= 0xFAD9)
+        or (v >= 0x2E80 and v <= 0x2EFF)
+        or (v >= 0x20000 and v <= 0x2A6DF)
+    )
+
 
 # Returns the unicode of a character in a unicode string, taking surrogate pairs into account
-def realord(s, pos = 0):
-    if s == None:
+def realord(s, pos=0):
+    if s is None:
         return None
     code = ord(s[pos])
     if code >= 0xD800 and code < 0xDC00:
-        if (len(s) <= pos + 1):
+        if len(s) <= pos + 1:
             print("realord warning: missing surrogate character")
             return 0
         code2 = ord(s[pos + 1])
         if code2 >= 0xDC00 and code < 0xE000:
-            code = 0x10000 + ((code - 0xD800) << 10) + (code2 - 0xDC00) 
-    return hex(code).replace('x', '')
+            code = 0x10000 + ((code - 0xD800) << 10) + (code2 - 0xDC00)
+    return hex(code).replace("x", "")
+
 
 headers = """
 <style>
@@ -136,17 +139,18 @@ headers = """
 </script>
 """
 
-template = """
-<div id="tooltip-{svg_id}" class="tooltip">
-    <span onmouseover="animate_strokes('{svg_id}');">
-    {kanji}
-    </span>
-    <div id="bottom-{svg_id}" class="bottom">
-        <svg id="{svg_id}"></svg>
-    </div>
-</div>"""
 
 def svg_insert(field_text):
+    template = """
+    <div id="tooltip-{svg_id}" class="tooltip">
+        <span onmouseover="animate_strokes('{svg_id}');">
+        {kanji}
+        </span>
+        <div id="bottom-{svg_id}" class="bottom">
+            <svg id="{svg_id}"></svg>
+        </div>
+    </div>"""
+
     output = ""
     load_svg = []
     for i, item in enumerate(field_text):
@@ -158,28 +162,39 @@ def svg_insert(field_text):
         if ret == 0:
             output += item
             continue
-        
-        svg_id=f"svg{i}"
+
+        svg_id = f"svg{i}"
 
         load_svg.append((svg_id, ret))
         output += template.format(svg_id=svg_id, kanji=item, kanji_id=ret)
 
-    output +="<script>\n"
-    output += '\n'.join([
-"loadSvg('{svg_id}', 'http://127.0.0.1:8001/kanimaji/converted/js_svg/{kanji_id}_js_anim.svg');".format(svg_id=c[0], kanji_id=c[1])
-for c in load_svg])
-    output += '</script>'
-    
+    output += "<script>\n"
+    output += "\n".join(
+        [
+            "loadSvg('{svg_id}', '{url}/{kanji_id}{svg_suffix}');".format(
+                svg_id=c[0],
+                kanji_id=c[1],
+                url=config["url"],
+                svg_suffix=config["svg_suffix"],
+            )
+            for c in load_svg
+        ]
+    )
+    output += "</script>"
+
     return output
+
 
 def on_card_render(output, context):
     output.question_text += headers
     output.answer_text += headers
 
     try:
-        output.answer_text += svg_insert(context.fields()["Notes-Kanjified-vocab"])
+        for field in config["fields"]:
+            output.answer_text += svg_insert(context.fields()[field])
     except KeyError:
         pass
+
 
 hooks.card_did_render.append(on_card_render)
 
@@ -189,7 +204,5 @@ hooks.card_did_render.append(on_card_render)
 #     if field_name != "Notes-Kanjified-vocab":
 #         return field_text
 
-
-            
 
 # hooks.field_filter.append(on_field_filter)
