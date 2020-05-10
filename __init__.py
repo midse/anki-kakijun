@@ -189,20 +189,18 @@ def on_card_render(output, context):
     output.question_text += headers
     output.answer_text += headers
 
-    try:
-        for field in config["fields"]:
-            output.answer_text += svg_insert(context.fields()[field])
-    except KeyError:
-        pass
-
 
 hooks.card_did_render.append(on_card_render)
 
-# def on_field_filter(field_text: str, field_name: str, filter_name: str, context: TemplateRenderContext
-# ) -> str:
 
-#     if field_name != "Notes-Kanjified-vocab":
-#         return field_text
+def on_field_filter(text, field, filter, context: TemplateRenderContext):
+    if filter != config["filter_name"]:
+        return text
+
+    try:
+        return svg_insert(context.fields()[field])
+    except KeyError:
+        return text
 
 
-# hooks.field_filter.append(on_field_filter)
+hooks.field_filter.append(on_field_filter)

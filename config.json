@@ -1,5 +1,5 @@
 {
-    "fields": ["Notes-Kanjified-vocab"],
     "url": "https://midse.github.io/anki-kakijun/kanjisvg/",
-    "svg_suffix": "_js_anim.svg"
+    "svg_suffix": "_js_anim.svg",
+    "filter_name": "kakijun"
 }
