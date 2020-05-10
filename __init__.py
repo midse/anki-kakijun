@@ -68,13 +68,9 @@ headers = """
 
 </style>
 <script type="text/javascript">
-    function get_svg(selector) {
-        return document.getElementById(selector).children[0];
-    }
-
-    function animate_stroke(selector, stroke) {
+     function animate_stroke(selector, stroke) {
         var svg, cls, stroke, els, selector, factor, duration, new_duration;
-        svg = get_svg(selector);
+        svg = document.getElementById(selector).children[0];
     
         /* cleanup all classes and durations, if necessary */
         var dataStrokeElements = svg.querySelectorAll('[data-stroke]');
@@ -104,10 +100,9 @@ headers = """
 
    
     function animate_strokes(selector) {
-        var svg = get_svg(selector);
+        var svg = document.getElementById(selector).children[0];
+        var num_strokes = svg.getAttribute('data-num-strokes');
 
-        alert(selector);
-        alert(svg);
         kill_animation_timeout();
   
         /* setup the animating function */
@@ -115,7 +110,7 @@ headers = """
             var next_stroke, duration;
     
             next_stroke = stroke % num_strokes + 1;
-            duration = animate_stroke(svg, stroke);
+            duration = animate_stroke(selector, stroke);
     
             window.animator_timeout = setTimeout(function(){
                 animator_loop(next_stroke); 
@@ -132,21 +127,20 @@ headers = """
         fetch(url).then(function (response) {
             response.text().then(function (text) {
                 target.innerHTML = text;
-                animate_strokes(selector);
             });
         }).catch(function (err) {
             alert(err);
         });
 
      }
-    
-    
 </script>
 """
 
 template = """
 <div id="tooltip-{svg_id}" class="tooltip">
+    <span onmouseover="animate_strokes('{svg_id}');">
     {kanji}
+    </span>
     <div id="bottom-{svg_id}" class="bottom">
         <svg id="{svg_id}"></svg>
     </div>
