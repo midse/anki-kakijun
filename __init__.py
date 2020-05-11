@@ -200,8 +200,8 @@ def svg_insert(field_text):
 
 
 def on_card_render(output, context):
-    output.question_text += headers
-    output.answer_text += headers
+    output.question_text = headers + output.question_text
+    output.answer_text = headers + output.answer_text
 
 
 hooks.card_did_render.append(on_card_render)
