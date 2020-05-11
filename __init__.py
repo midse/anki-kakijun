@@ -146,7 +146,7 @@ headers = """
                 target.innerHTML = text;
             });
         }).catch(function (err) {
-            alert(err);
+            console.log(err);
         });
 
      }
