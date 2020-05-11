@@ -1,6 +1,7 @@
 # anki-kakijun
 
-<a title="Rate on AnkiWeb" href="https://ankiweb.net/shared/info/1250448937"><img src="https://glutanimate.com/logos/ankiweb-rate.svg"></a>
+[![Rate on AnkiWeb](https://glutanimate.com/logos/ankiweb-rate.svg)](https://ankiweb.net/shared/info/1250448937)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 Kanji stroke order add-on for Anki (beta version)
 
@@ -25,7 +26,7 @@ This project is based on those wonderful opensource projects :
 + [kanimaji](https://github.com/maurimo/kanimaji)
 + [KanjiVG](https://github.com/KanjiVG/kanjivg)
 
-## License
+## Licensing
 
 The source code of this add-on is released under the MIT License.
 
