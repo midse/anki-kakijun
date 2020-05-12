@@ -15,9 +15,9 @@ Add the **kakijun** filter to your card templates :
 {{kakijun:field-name}}
 ```
 
-## Example 
-
 ![Animated example](images/example.gif "Animated example")
+
+## Configuration
 
 ## References
 
