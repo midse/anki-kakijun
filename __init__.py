@@ -15,8 +15,19 @@
 from anki import hooks
 from anki.template import TemplateRenderContext
 from aqt import mw
+from .static import css, js
 
 config = mw.addonManager.getConfig(__name__)
+
+try:
+    drawing_speed = float(config["drawing_speed"])
+except ValueError:
+    drawing_speed = 0.5
+
+try:
+    time_between_strokes = int(config["time_between_strokes"])
+except ValueError:
+    time_between_strokes = 750
 
 
 def is_kanji(v):
@@ -30,8 +41,10 @@ def is_kanji(v):
     )
 
 
-# Returns the unicode of a character in a unicode string, taking surrogate pairs into account
 def realord(s, pos=0):
+    """
+        Returns the unicode of a character in a unicode string, taking surrogate pairs into account
+    """
     if s is None:
         return None
     code = ord(s[pos])
@@ -45,113 +58,16 @@ def realord(s, pos=0):
     return hex(code).replace("x", "")
 
 
-headers = """
-<style>
-.tooltip {
-    display:inline-block;
-    position:relative;
-    border-bottom:1px dotted #666;
-    text-align:left;
-    cursor: pointer;
-}
-
-.tooltip .bottom {
-    min-width:100px;
-    /*max-width:400px;*/
-
-    left:50%;
-    transform:translate(-50%, 0);
-    padding:20px;
-    color:#666666;
-    background-color:#EEEEEE;
-    font-weight:normal;
-    font-size:13px;
-    border-radius:8px;
-    position:absolute;
-    z-index:99999999;
-    box-sizing:border-box;
-    box-shadow:0 1px 8px rgba(0,0,0,0.5);
-    display:none;
-}
-
-.tooltip:hover .bottom {
-    display:block;
-}
-
-.tooltip .bottom svg {
-    width:100px;
-    height:100px;
-}
-
-</style>
-<script type="text/javascript">
-     function animate_stroke(selector, stroke) {
-        var svg, cls, stroke, els, selector, factor, duration, new_duration;
-        svg = document.getElementById(selector).children[0];
-    
-        /* cleanup all classes and durations, if necessary */
-        var dataStrokeElements = svg.querySelectorAll('[data-stroke]');
-
-        dataStrokeElements.forEach(function (item, index) {
-            item.classList.remove('animate', 'current', 'brush', 'backward');
-            item.style.animationDuration = '';
-        });
-  
-        /* add classes to animating elaments */
-        selector = '[data-stroke="' + stroke + '"]';
-        var dataStrokeElements = svg.querySelectorAll(selector);
-
-        dataStrokeElements.forEach(function (item, index) {
-            item.classList.add('current', 'animate', 'brush');
-            item.style.animationDuration = '1s';
-        });
-
-    }
-    
-    function kill_animation_timeout() {
-        if(window.animator_timeout) {
-            clearTimeout(window.animator_timeout);
-            delete window.animator_timeout;
-        }
-    }
-
-   
-    function animate_strokes(selector) {
-        var svg = document.getElementById(selector).children[0];
-        var num_strokes = svg.getAttribute('data-num-strokes');
-
-        kill_animation_timeout();
-  
-        /* setup the animating function */
-        animator_loop = function(stroke) {
-            var next_stroke, duration;
-    
-            next_stroke = stroke % num_strokes + 1;
-            duration = animate_stroke(selector, stroke);
-    
-            window.animator_timeout = setTimeout(function(){
-                animator_loop(next_stroke); 
-            }, 1000);
-        }
-        
-        /* start the animation */
-        animator_loop(1);
-    }
-
-    function loadSvg(selector, url) {
-        var target = document.getElementById(selector);
-
-        fetch(url).then(function (response) {
-            response.text().then(function (text) {
-                target.innerHTML = text;
-            });
-        }).catch(function (err) {
-            console.log(err);
-        });
-
-     }
-</script>
-"""
+def format_headers():
+    headers = """
+    <style>
+    {css}
+    </style>
+    <script type="text/javascript">
+    {js}
+    </script>
+    """
+    return headers.format(css=css, js=js(drawing_speed, time_between_strokes))
 
 
 def svg_insert(field_text):
@@ -200,11 +116,9 @@ def svg_insert(field_text):
 
 
 def on_card_render(output, context):
+    headers = format_headers()
     output.question_text = headers + output.question_text
     output.answer_text = headers + output.answer_text
-
-
-hooks.card_did_render.append(on_card_render)
 
 
 def on_field_filter(text, field, filter, context: TemplateRenderContext):
@@ -217,4 +131,5 @@ def on_field_filter(text, field, filter, context: TemplateRenderContext):
         return text
 
 
+hooks.card_did_render.append(on_card_render)
 hooks.field_filter.append(on_field_filter)

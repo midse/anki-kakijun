@@ -1,5 +1,7 @@
 {
-    "url": "https://midse.github.io/anki-kakijun/kanjisvg/",
+    "drawing_speed": "0.5",
+    "filter_name": "kakijun",
     "svg_suffix": "_js_anim.svg",
-    "filter_name": "kakijun"
+    "time_between_strokes": "750",
+    "url": "https://midse.github.io/anki-kakijun/kanjisvg/"
 }
