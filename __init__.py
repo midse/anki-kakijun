@@ -71,15 +71,13 @@ def format_headers():
 
 
 def svg_insert(field_text):
-    template = """
-    <div id="tooltip-{svg_id}" class="tooltip">
-        <span onmouseover="animate_strokes('{svg_id}');">
-        {kanji}
-        </span>
-        <div id="bottom-{svg_id}" class="bottom">
-            <svg id="{svg_id}"></svg>
-        </div>
-    </div>"""
+    template = '<div id="tooltip-{svg_id}" class="tooltip">'
+    template += "<span onmouseover=\"animate_strokes('{svg_id}');\">"
+    template += "{kanji}"
+    template += "</span>"
+    template += '<div id="bottom-{svg_id}" class="bottom">'
+    template += '<svg id="{svg_id}"></svg>'
+    template += "</div></div>"
 
     output = ""
     load_svg = []
@@ -98,8 +96,8 @@ def svg_insert(field_text):
         load_svg.append((svg_id, ret))
         output += template.format(svg_id=svg_id, kanji=item, kanji_id=ret)
 
-    output += "<script>\n"
-    output += "\n".join(
+    output += "<script>"
+    output += "".join(
         [
             "loadSvg('{svg_id}', '{url}/{kanji_id}{svg_suffix}');".format(
                 svg_id=c[0],
