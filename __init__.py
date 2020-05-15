@@ -12,6 +12,7 @@
 # OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+import uuid
 from anki import hooks
 from anki.template import TemplateRenderContext
 from aqt import mw
@@ -28,6 +29,10 @@ try:
     time_between_strokes = int(config["time_between_strokes"])
 except ValueError:
     time_between_strokes = 750
+
+
+def small_uuid(length=8):
+    return str(uuid.uuid4())[:length]
 
 
 def is_kanji(v):
@@ -91,7 +96,7 @@ def svg_insert(field_text):
             output += item
             continue
 
-        svg_id = f"svg{i}"
+        svg_id = f"svg{i}-{small_uuid()}"
 
         load_svg.append((svg_id, ret))
         output += template.format(svg_id=svg_id, kanji=item, kanji_id=ret)
