@@ -5,15 +5,30 @@
 
 Kanji stroke order add-on for Anki (beta version)
 
+## Getting the add-on
+
+- Go to Tools → Add-ons (Keyboard shortcut: Ctrl+Shift+A)
+- Select Get Add-ons
+- Insert the Add-on's code (1250448937)
+- Click on OK
+
 ## Usage 
 
-Go to Tools > Manage Note Types > Select your note type > Cards (on the right side)
-
-Add the **kakijun** filter to your card templates :
-
+- Go to Tools > Manage Note Types (Keyboard shortcut: Ctrl+Shift+N)
+- Select the note type you want to edit or create a new note type
+- Click on Cards on the right side to edit the Note Type's Cards
+- At the top of the window select the card type you want to edit
+- Select the template you want to edit (for example: Front Template or Back Template)
+- Add the **kakijun** filter to your card templates by changing 
+```html
+{{field-name}}
+```
+to
 ```html
 {{kakijun:field-name}}
 ```
+- Repeat for any other templates and card types of this note type, where you want to use anki-kakijun
+- Click Save in the bottom right of the window
 
 ![Animated example](images/example.gif "Animated example")
 
